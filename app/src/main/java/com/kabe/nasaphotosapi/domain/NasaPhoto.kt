@@ -6,5 +6,7 @@ import java.io.Serializable
 
 @Entity(tableName = "Rover")
 data class NasaPhoto (
-    @SerializedName("id") var author: Int,
+    @SerializedName("id") var id: Int,
+    @SerializedName("img_src") var imgUrl: String,
+    @SerializedName("camera") var camera: RoverCamera
 ) : Serializable
