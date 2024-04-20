@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.composeDestinations)
+    kotlin("kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -75,4 +77,34 @@ dependencies {
     // Compose Destinations
     implementation(libs.compose.destinations.core)
     ksp(libs.compose.destinations.ksp)
+
+    // Dagger Hilt
+    implementation(libs.dagger.hilt.android)
+    kapt(libs.dagger.hilt.android.compiler)
+
+    //Hilt Navigation Compose
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    // Retrofit
+    implementation (libs.squareup.retrofit2.retrofit)
+    implementation (libs.squareup.retrofit2.converter.gson)
+    implementation (libs.squareup.okhttp3)
+    implementation (libs.squareup.gson)
+
+    // Room
+    implementation (libs.androidx.room)
+    implementation (libs.androidx.room.ktx)
+    ksp (libs.androidx.room.compiler)
+    annotationProcessor (libs.androidx.room.compiler)
+
+    // Coroutines
+    implementation(libs.kotlinx.coroutines)
+
+    // Coil
+    implementation(libs.coil)
+}
+
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
 }
