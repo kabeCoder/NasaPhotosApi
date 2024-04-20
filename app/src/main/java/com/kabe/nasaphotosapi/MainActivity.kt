@@ -10,7 +10,9 @@ import androidx.compose.ui.Modifier
 import com.kabe.nasaphotosapi.features.home.NavGraphs
 import com.kabe.nasaphotosapi.ui.theme.NasaPhotosApiTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
