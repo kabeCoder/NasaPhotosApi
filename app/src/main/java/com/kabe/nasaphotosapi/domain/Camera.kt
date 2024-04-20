@@ -3,7 +3,7 @@ package com.kabe.nasaphotosapi.domain
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
-data class RoverCamera (
+data class Camera (
     @SerializedName("id") val cameraId: Int,
     @SerializedName("name") val name: String,
     @SerializedName("rover_id") val roverId: Int,

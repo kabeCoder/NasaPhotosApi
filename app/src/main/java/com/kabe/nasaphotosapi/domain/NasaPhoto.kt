@@ -8,5 +8,7 @@ import java.io.Serializable
 data class NasaPhoto (
     @SerializedName("id") var id: Int,
     @SerializedName("img_src") var imgUrl: String,
-    @SerializedName("camera") var camera: RoverCamera
+    @SerializedName("camera") var camera: Camera,
+    @SerializedName("earth_date") var earthDate: String,
+    @SerializedName("rover") var rover: Rover,
 ) : Serializable

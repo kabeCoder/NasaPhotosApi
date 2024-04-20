@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">NasaPhotosApi</string>
+
+    // Home Screen
+
+    <string name="label_rover_name">Rover Name:</string>
+    <string name="label_camera_name">Camera Name:</string>
+    <string name="label_date_on_earth">Date on Earth:</string>
 </resources>
