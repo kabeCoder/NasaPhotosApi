@@ -29,36 +29,48 @@ class HomeScreenViewModel @Inject constructor(
     private val _loadingStateNasaPhotos = MutableStateFlow(false)
     val loadingStateNasaPhotos: StateFlow<Boolean> = _loadingStateNasaPhotos
 
-    init {
-        viewModelScope.launch {
-            try {
-                val cachedData = nasaPhotoRepository.getCachedNasaPhotos()
-                if (cachedData.isNotEmpty()) {
-                    _nasaPhotos.emit(cachedData)
-                } else {
-                    getNasaPhotos()
-                }
-            } catch (e: Exception) {
-                _errorMessage.emit("Error occurred while retrieving cached data: ${e.message}")
-            }
-        }
+    private var isNasaPhotosFetched = false
+
+      suspend fun getNasaPhotos() {
+          viewModelScope.launch {
+              if (!isNasaPhotosFetched) {
+                  _loadingStateNasaPhotos.emit(true)
+                  val nasaPhotoResults = nasaPhotoRepository.getNasaPhotos()
+                  when (nasaPhotoResults.status) {
+                      Status.SUCCESS -> nasaPhotoResults.data?.let { nasaPhotos ->
+                          _nasaPhotos.emit(nasaPhotos)
+                          isNasaPhotosFetched = true
+                          _loadingStateNasaPhotos.emit(false)
+                      }
+
+                      Status.ERROR -> {
+                          _loadingStateNasaPhotos.emit(false)
+                          nasaPhotoResults.message?.let { _errorMessage.emit(it) }
+                      }
+                  }
+          } else {
+              _nasaPhotos.emit(nasaPhotoRepository.getCachedNasaPhotos())
+                  _loadingStateNasaPhotos.emit(false)
+          }
+      }
     }
 
-      fun getNasaPhotos() {
+    suspend fun refreshNasaPhotos() {
         viewModelScope.launch {
-            _loadingStateNasaPhotos.emit(true)
-            val nasaPhotoResults = nasaPhotoRepository.getNasaPhotos()
-            when (nasaPhotoResults.status) {
-                Status.SUCCESS -> nasaPhotoResults.data?.let { nasaPhotos ->
-                    _loadingStateNasaPhotos.emit(false)
-                    _nasaPhotos.emit(nasaPhotos.toMutableList())
-                }
+                _loadingStateNasaPhotos.emit(true)
+                val nasaPhotoResults = nasaPhotoRepository.getNasaPhotos()
+                when (nasaPhotoResults.status) {
+                    Status.SUCCESS -> nasaPhotoResults.data?.let { nasaPhotos ->
+                        _nasaPhotos.emit(nasaPhotos)
+                        isNasaPhotosFetched = true
+                        _loadingStateNasaPhotos.emit(false)
+                    }
 
-                Status.ERROR -> {
-                    _loadingStateNasaPhotos.emit(false)
-                    nasaPhotoResults.message?.let { _errorMessage.emit(it) }
+                    Status.ERROR -> {
+                        _loadingStateNasaPhotos.emit(false)
+                        nasaPhotoResults.message?.let { _errorMessage.emit(it) }
+                    }
                 }
-            }
         }
     }
 }

@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.kabe.nasaphotosapi.features.home.NavGraphs
+import com.kabe.nasaphotosapi.features.NavGraphs
 import com.kabe.nasaphotosapi.ui.theme.NasaPhotosApiTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
 import dagger.hilt.android.AndroidEntryPoint

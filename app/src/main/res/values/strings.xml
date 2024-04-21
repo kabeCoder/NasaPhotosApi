@@ -6,4 +6,9 @@
     <string name="label_rover_name">Rover Name:</string>
     <string name="label_camera_name">Camera Name:</string>
     <string name="label_date_on_earth">Date on Earth:</string>
+    <string name="label_launch_date">Launch Date:</string>
+    <string name="label_landing_date">Landing Date:</string>
+    <string name="label_status">Status:</string>
+    <string name="label_total_photos">Total Photos:</string>
+
 </resources>
