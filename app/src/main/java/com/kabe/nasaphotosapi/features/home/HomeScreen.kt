@@ -1,20 +1,15 @@
 package com.kabe.nasaphotosapi.features.home
 
+import android.util.Log
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -23,13 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -41,21 +32,30 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.kabe.nasaphotosapi.R
 import com.kabe.nasaphotosapi.domain.NasaPhoto
+import com.kabe.nasaphotosapi.features.destinations.DetailsScreenDestination
 import com.kabe.nasaphotosapi.features.home.views.PullToRefreshLazyColumn
 import com.kabe.nasaphotosapi.ui.theme.NasaPhotosApiTheme
 import com.kabe.nasaphotosapi.ui.theme.spacing
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 
 @RootNavGraph(start = true)
 @Destination
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navigator: DestinationsNavigator?) {
     val viewModel: HomeScreenViewModel = hiltViewModel()
     val nasaPhotoLists by viewModel.nasaPhotos.collectAsState(initial = emptyList())
     val nasaPhotosLoadingState by viewModel.loadingStateNasaPhotos.collectAsState(initial = false)
 
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(nasaPhotoLists.isEmpty()) {
+        viewModel.getNasaPhotos()
+    }
 
     if (nasaPhotosLoadingState) {
         CircularProgressIndicator(
@@ -67,14 +67,18 @@ fun HomeScreen() {
         HomeScreenView(
             nasaPhotoLists = nasaPhotoLists,
             viewModel = viewModel,
+            navigator = navigator,
+            scope = scope,
         )
     }
 }
 
 @Composable
 fun HomeScreenView(
+    navigator: DestinationsNavigator?,
     nasaPhotoLists: List<NasaPhoto>,
     viewModel: HomeScreenViewModel,
+    scope: CoroutineScope,
 ) {
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -87,10 +91,10 @@ fun HomeScreenView(
                         .fillMaxWidth()
                         .padding(MaterialTheme.spacing.medium)
                         .clickable {
-                            //navigator?.navigate(DetailScreenDestination(randomPerson))
+                            navigator?.navigate(DetailsScreenDestination(nasaPhoto = nasaPhoto))
                         }
                 ) {
-                    Row {
+                    Row  {
                         AsyncImage(
                             model = ImageRequest.Builder(LocalContext.current)
                                 .data(nasaPhoto.imgUrl.replace("http://", "https://"))
@@ -102,20 +106,50 @@ fun HomeScreenView(
                                 .height(120.dp)
                                 .width(120.dp)
                         )
-                        Column {
+                        Column(
+                            modifier = Modifier.padding(
+                                start = MaterialTheme.spacing.small,
+                                top = MaterialTheme.spacing.medium,
+                            )
+                        ) {
 
-                            Text(text = stringResource(id = R.string.label_rover_name) + (nasaPhoto.rover?.name
-                                ?: ""))
-                            Text(text = stringResource(id = R.string.label_camera_name) + (nasaPhoto.camera?.fullName
-                                ?: ""))
-                            Text(text = stringResource(id = R.string.label_date_on_earth) + nasaPhoto.earthDate)
+                            Text(
+                                modifier = Modifier.padding(MaterialTheme.spacing.extraSmall),
+                                text = "${stringResource(id = R.string.label_rover_name)} ${(nasaPhoto.rover?.name ?: "")}",
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    fontSize = 14.sp,
+                                    color = Black,
+                                    fontWeight = FontWeight.W600
+                                )
+                            )
+
+                            Text(
+                                modifier = Modifier.padding(MaterialTheme.spacing.extraSmall),
+                                text = "${stringResource(id = R.string.label_camera_name)} ${(nasaPhoto.camera?.fullName ?: "")}",
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    fontSize = 14.sp,
+                                    color = Black,
+                                    fontWeight = FontWeight.W600
+                                )
+                            )
+                            Text(
+                                modifier = Modifier.padding(MaterialTheme.spacing.extraSmall),
+                                text = "${stringResource(id = R.string.label_date_on_earth)} ${nasaPhoto.earthDate}",
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    fontSize = 14.sp,
+                                    color = Black,
+                                    fontWeight = FontWeight.W600
+                                )
+                            )
                         }
                     }
                 }
             },
             isRefreshing = viewModel.loadingStateNasaPhotos.collectAsState().value,
             onRefresh = {
-                viewModel.getNasaPhotos()
+                scope.launch {
+                    viewModel.refreshNasaPhotos()
+                }
             }
         )
     }
@@ -125,6 +159,6 @@ fun HomeScreenView(
 @Composable
 fun HomeScreenPreview() {
     NasaPhotosApiTheme {
-        HomeScreen()
+        HomeScreen(navigator = null)
     }
 }
