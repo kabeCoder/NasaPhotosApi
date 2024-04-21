@@ -29,25 +29,36 @@ class HomeScreenViewModel @Inject constructor(
     private val _loadingStateNasaPhotos = MutableStateFlow(false)
     val loadingStateNasaPhotos: StateFlow<Boolean> = _loadingStateNasaPhotos
 
-
-    suspend fun getNasaPhotos() {
-        _loadingStateNasaPhotos.emit(true)
+    init {
         viewModelScope.launch {
+            try {
+                val cachedData = nasaPhotoRepository.getCachedNasaPhotos()
+                if (cachedData.isNotEmpty()) {
+                    _nasaPhotos.emit(cachedData)
+                } else {
+                    getNasaPhotos()
+                }
+            } catch (e: Exception) {
+                _errorMessage.emit("Error occurred while retrieving cached data: ${e.message}")
+            }
+        }
+    }
+
+      fun getNasaPhotos() {
+        viewModelScope.launch {
+            _loadingStateNasaPhotos.emit(true)
             val nasaPhotoResults = nasaPhotoRepository.getNasaPhotos()
             when (nasaPhotoResults.status) {
                 Status.SUCCESS -> nasaPhotoResults.data?.let { nasaPhotos ->
                     _loadingStateNasaPhotos.emit(false)
                     _nasaPhotos.emit(nasaPhotos.toMutableList())
-                    Log.d("HomeScreenViewModel", "Success")
                 }
 
                 Status.ERROR -> {
                     _loadingStateNasaPhotos.emit(false)
                     nasaPhotoResults.message?.let { _errorMessage.emit(it) }
-                    Log.d("HomeScreenViewModel", "Failed")
                 }
             }
         }
     }
-
 }
