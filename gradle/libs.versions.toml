@@ -19,6 +19,7 @@ gson = "2.8.8"
 room = "2.6.1"
 coroutines = "1.7.1"
 coil = "2.6.0"
+material3Android = "1.2.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,7 +35,6 @@ androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
-androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintLayoutCompose"}
 compose-destinations-core =  { group = "io.github.raamcosta.compose-destinations", name = "core", version.ref = "composeDestinationsKSP"}
 compose-destinations-ksp =  { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "composeDestinationsKSP"}
@@ -50,6 +50,7 @@ androidx-room-ktx =  { group = "androidx.room", name = "room-ktx", version.ref =
 androidx-room-compiler =  { group = "androidx.room", name = "room-compiler", version.ref = "room"}
 kotlinx-coroutines =  { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines"}
 coil =  { group = "io.coil-kt", name = "coil-compose", version.ref = "coil"}
+androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
