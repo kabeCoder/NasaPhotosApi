@@ -51,6 +51,33 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    flavorDimensions += "environment"
+    productFlavors{
+
+        create("mock"){
+            dimension = "environment"
+            applicationIdSuffix = ".mock"
+            versionNameSuffix = "-mock"
+            buildConfigField("String", "BASE_URL", "\"https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/\"")
+            buildConfigField("String", "API_KEY", "\"htzDUej1O2myh7zWWTAAv05WD5Te5mJZyKNHIMVX\"")
+        }
+        create("prod"){
+            dimension = "environment"
+            applicationIdSuffix = ".prod"
+            versionNameSuffix = "-prod"
+            buildConfigField("String", "BASE_URL", "\"https://api.nasa.gov/mars-photos/api/v1/rovers/curiosity/\"")
+            buildConfigField("String", "API_KEY", "\"htzDUej1O2myh7zWWTAAv05WD5Te5mJZyKNHIMVX\"")
+        }
+    }
+
+    androidComponents {
+        beforeVariants { variantBuilder ->
+            if (variantBuilder.name == "mockRelease" || variantBuilder.name == "prodDebug") {
+                variantBuilder.enable = false
+            }
+        }
+    }
 }
 
 dependencies {
